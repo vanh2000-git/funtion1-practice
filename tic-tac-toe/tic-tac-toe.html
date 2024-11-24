@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tic-tac-toe</title>
+</head>
+<style>
+    table {
+        border-collapse: collapse;
+        margin: 20px auto;
+    }
+    td {
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        font-size: 24px;
+        border: 1px solid black;
+        cursor: pointer;
+    }
+    td.disabled {
+        pointer-events: none;
+        background-color: #f0f0f0;
+    }
+    h1, button {
+        text-align: center;
+        display: block;
+    }
+</style>
+<body>
+<h1>Tic Tac Toe</h1>
+<table id="gameBoard"></table>
+<button onclick="restartGame()">Restart Game</button>
+<script>
+    const SIZE = 3; // Kích thước bàn cờ
+    let board = Array(SIZE).fill().map(() => Array(SIZE).fill(".")); // Mảng 2 chiều
+    let currentPlayer = "X"; // Người chơi hiện tại
+
+    // Tạo bàn cờ HTML
+    function createBoard() {
+        const gameBoard = document.getElementById("gameBoard");
+        gameBoard.innerHTML = ""; // Xóa nội dung cũ
+        for (let i = 0; i < SIZE; i++) {
+            const row = document.createElement("tr");
+            for (let j = 0; j < SIZE; j++) {
+                const cell = document.createElement("td");
+                cell.textContent = board[i][j] === "." ? "" : board[i][j];
+                cell.addEventListener("click", () => makeMove(i, j));
+                row.appendChild(cell);
+            }
+            gameBoard.appendChild(row);
+        }
+    }
+
+    // Xử lý lượt chơi
+    function makeMove(row, col) {
+        if (board[row][col] === ".") {
+            board[row][col] = currentPlayer; // Cập nhật bàn cờ
+            if (checkWinner(row, col)) {
+                alert(`Player ${currentPlayer} wins!`);
+                disableBoard();
+                return;
+            }
+            currentPlayer = currentPlayer === "X" ? "O" : "X"; // Đổi lượt chơi
+            createBoard(); // Cập nhật lại bàn cờ
+        }
+    }
+
+    // Kiểm tra người chiến thắng
+    function checkWinner(row, col) {
+        // Kiểm tra hàng
+        if (board[row].every(cell => cell === currentPlayer)) return true;
+
+        // Kiểm tra cột
+        if (board.every(row => row[col] === currentPlayer)) return true;
+
+        // Kiểm tra đường chéo chính
+        if (row === col && board.every((row, i) => row[i] === currentPlayer)) return true;
+
+        // Kiểm tra đường chéo phụ
+        if (row + col === SIZE - 1 && board.every((row, i) => row[SIZE - 1 - i] === currentPlayer)) return true;
+
+        return false; // Không có ai thắng
+    }
+
+    // Vô hiệu hóa bàn cờ
+    function disableBoard() {
+        const cells = document.querySelectorAll("td");
+        cells.forEach(cell => cell.classList.add("disabled"));
+    }
+
+    // Khởi động lại trò chơi
+    function restartGame() {
+        board = Array(SIZE).fill().map(() => Array(SIZE).fill("."));
+        currentPlayer = "X";
+        createBoard();
+    }
+
+    // Khởi tạo bàn cờ
+    createBoard();
+</script>
+</body>
+</html>
